@@ -14,7 +14,7 @@ Copy the jd40 directory to tmk
 $ cp -r ./jd40 YOUR_DIRECTORY/keyboard
 ```
 
-## Build Environment Setup (Taken from https://github.com/jackhumbert/qmk_firmware.git)
+## Build Environment Setup (Taken from [Jack Humbert's QMK firmware](https://github.com/jackhumbert/qmk_firmware))
 
 ### Windows 10
 
