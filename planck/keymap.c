@@ -1,41 +1,44 @@
-// This is the canonical layout file for the Quantum project. If you want to add another keyboard,
-// this is the style you want to emulate.
+/* Copyright 2015-2017 Jack Humbert
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "planck.h"
 #include "action_layer.h"
-#ifdef AUDIO_ENABLE
-  #include "audio.h"
-#endif
-#include "eeconfig.h"
 
 extern keymap_config_t keymap_config;
 
-// Each layer gets a name for readability, which is then used in the keymap matrix below.
-// The underscores don't mean anything - you can have a layer called STUFF or any other name.
-// Layer names don't all need to be of the same length, obviously, and you can also skip them
-// entirely and just use numbers.
-#define _QWERTY 0
-#define _GAMING 1
-#define _COLEMAK 2
-#define _LOWER 3
-#define _RAISE 4
-#define _PLOVER 5
-#define _ADJUST 16
+enum planck_layers {
+  _QWERTY,
+  _COLEMAK,
+  _DVORAK,
+  _LOWER,
+  _RAISE,
+  _PLOVER,
+  _ADJUST
+};
 
 enum planck_keycodes {
   QWERTY = SAFE_RANGE,
-  GAMING,
   COLEMAK,
+  DVORAK,
   PLOVER,
   LOWER,
   RAISE,
   BACKLIT,
   EXT_PLV
 };
-
-// Fillers to make layering more clear
-#define _______ KC_TRNS
-#define XXXXXXX KC_NO
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -57,24 +60,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   {BACKLIT, KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT}
 },
 
-/* Gaming
- * ,-----------------------------------------------------------------------------------.
- * | Esc  |   Q  |  Up  |   E  |   R  |   T  |   Y  |   U  |   X  |   O  |   P  | Bksp |
- * |------+------+------+------+------+-------------+------+------+------+------+------|
- * | Tab  | Left | Down |Right |   F  |   G  |   H  |   Y  |   K  |   A  |   ;  |Enter |
- * |------+------+------+------+------+------|------+------+------+------+------+------|
- * | Shift|   Z  |   X  |   C  |   V  |   B  |   N  |   M  |   B  |   .  |   /  |Enter |
- * |------+------+------+------+------+------+------+------+------+------+------+------|
- * | Brite| Ctrl | Alt  | GUI  |Lower |    Space    |Raise | Left | Down |  Up  |Right |
- * `-----------------------------------------------------------------------------------'
- */
-[_GAMING] = {
-  {KC_ESC,  KC_Q,    KC_UP,   KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_X,    KC_O,    KC_P,    KC_BSPC},
-  {KC_TAB,  KC_LEFT, KC_DOWN, KC_RGHT, KC_F,    KC_G,    KC_H,    KC_Y,    KC_K,    KC_A,    KC_SCLN, KC_ENT },
-  {KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_B,    KC_DOT,  KC_SLSH, KC_RSFT},
-  {BACKLIT, KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT}
-},
-
 /* Colemak
  * ,-----------------------------------------------------------------------------------.
  * | Tab  |   Q  |   W  |   F  |   P  |   G  |   J  |   L  |   U  |   Y  |   ;  | Bksp |
@@ -90,6 +75,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   {KC_TAB,  KC_Q,    KC_W,    KC_F,    KC_P,    KC_G,    KC_J,    KC_L,    KC_U,    KC_Y,    KC_SCLN, KC_BSPC},
   {KC_ESC,  KC_A,    KC_R,    KC_S,    KC_T,    KC_D,    KC_H,    KC_N,    KC_E,    KC_I,    KC_O,    KC_QUOT},
   {KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_K,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT },
+  {BACKLIT, KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT}
+},
+
+/* Dvorak
+ * ,-----------------------------------------------------------------------------------.
+ * | Tab  |   "  |   ,  |   .  |   P  |   Y  |   F  |   G  |   C  |   R  |   L  | Bksp |
+ * |------+------+------+------+------+-------------+------+------+------+------+------|
+ * | Esc  |   A  |   O  |   E  |   U  |   I  |   D  |   H  |   T  |   N  |   S  |  /   |
+ * |------+------+------+------+------+------|------+------+------+------+------+------|
+ * | Shift|   ;  |   Q  |   J  |   K  |   X  |   B  |   M  |   W  |   V  |   Z  |Enter |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * | Brite| Ctrl | Alt  | GUI  |Lower |    Space    |Raise | Left | Down |  Up  |Right |
+ * `-----------------------------------------------------------------------------------'
+ */
+[_DVORAK] = {
+  {KC_TAB,  KC_QUOT, KC_COMM, KC_DOT,  KC_P,    KC_Y,    KC_F,    KC_G,    KC_C,    KC_R,    KC_L,    KC_BSPC},
+  {KC_ESC,  KC_A,    KC_O,    KC_E,    KC_U,    KC_I,    KC_D,    KC_H,    KC_T,    KC_N,    KC_S,    KC_SLSH},
+  {KC_LSFT, KC_SCLN, KC_Q,    KC_J,    KC_K,    KC_X,    KC_B,    KC_M,    KC_W,    KC_V,    KC_Z,    KC_ENT },
   {BACKLIT, KC_LCTL, KC_LALT, KC_LGUI, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT}
 },
 
@@ -135,7 +138,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * |      |   S  |   T  |   P  |   H  |   *  |   *  |   F  |   P  |   L  |   T  |   D  |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |TogOut|   S  |   K  |   W  |   R  |   *  |   *  |   R  |   B  |   G  |   S  |   Z  |
+ * |      |   S  |   K  |   W  |   R  |   *  |   *  |   R  |   B  |   G  |   S  |   Z  |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * | Exit |      |      |   A  |   O  |             |   E  |   U  |      |      |      |
  * `-----------------------------------------------------------------------------------'
@@ -152,7 +155,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * ,-----------------------------------------------------------------------------------.
  * |      | Reset|      |      |      |      |      |      |      |      |      |  Del |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |      |      |Aud on|Audoff|AGnorm|AGswap|Qwerty|Gaming|Colemk|Plover|      |
+ * |      |      |      |Aud on|Audoff|AGnorm|AGswap|Qwerty|Colemk|Dvorak|Plover|      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |      |Voice-|Voice+|Mus on|Musoff|MIDIon| NKRO |MIDIof|      |      |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -160,9 +163,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJUST] = {
-  {_______, RESET,   _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_DEL},
-  {_______, _______, _______, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  GAMING,  COLEMAK, PLOVER,  _______},
-  {_______, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MAGIC_TOGGLE_NKRO, MI_OFF , _______, _______, _______, _______},
+  {_______, RESET,   DEBUG,    RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, RGB_VAI, RGB_VAD, KC_DEL },
+  {_______, _______, MU_MOD,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  COLEMAK, DVORAK,  PLOVER,  _______},
+  {_______, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MAGIC_TOGGLE_NKRO, MI_OFF, TERM_ON, TERM_OFF, _______, _______},
   {_______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______}
 }
 
@@ -170,50 +173,28 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 #ifdef AUDIO_ENABLE
-
-float tone_startup[][2]    = SONG(STARTUP_SOUND);
-float tone_qwerty[][2]     = SONG(ONE_UP_SOUND);
-float tone_gaming[][2]     = SONG(ZELDA_PUZZLE);
-float tone_colemak[][2]    = SONG(COLEMAK_SOUND);
-float tone_plover[][2]     = SONG(PLOVER_SOUND);
-float tone_plover_gb[][2]  = SONG(PLOVER_GOODBYE_SOUND);
-float music_scale[][2]     = SONG(MUSIC_SCALE_SOUND);
-
-float tone_goodbye[][2] = SONG(GOODBYE_SOUND);
+  float plover_song[][2]     = SONG(PLOVER_SOUND);
+  float plover_gb_song[][2]  = SONG(PLOVER_GOODBYE_SOUND);
 #endif
-
-
-void persistant_default_layer_set(uint16_t default_layer) {
-  eeconfig_update_default_layer(default_layer);
-  default_layer_set(default_layer);
-}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case QWERTY:
       if (record->event.pressed) {
-        #ifdef AUDIO_ENABLE
-          PLAY_NOTE_ARRAY(tone_qwerty, false, 0);
-        #endif
-        persistant_default_layer_set(1UL<<_QWERTY);
+        print("mode just switched to qwerty and this is a huge string\n");
+        set_single_persistent_default_layer(_QWERTY);
       }
       return false;
       break;
     case COLEMAK:
       if (record->event.pressed) {
-        #ifdef AUDIO_ENABLE
-          PLAY_NOTE_ARRAY(tone_colemak, false, 0);
-        #endif
-        persistant_default_layer_set(1UL<<_COLEMAK);
+        set_single_persistent_default_layer(_COLEMAK);
       }
       return false;
       break;
-    case GAMING:
+    case DVORAK:
       if (record->event.pressed) {
-        #ifdef AUDIO_ENABLE
-          PLAY_NOTE_ARRAY(tone_gaming, false, 0);
-        #endif
-        persistant_default_layer_set(1UL<<_GAMING);
+        set_single_persistent_default_layer(_DVORAK);
       }
       return false;
       break;
@@ -243,8 +224,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         #ifdef BACKLIGHT_ENABLE
           backlight_step();
         #endif
+        PORTE &= ~(1<<6);
       } else {
         unregister_code(KC_RSFT);
+        PORTE |= (1<<6);
       }
       return false;
       break;
@@ -252,7 +235,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         #ifdef AUDIO_ENABLE
           stop_all_notes();
-          PLAY_NOTE_ARRAY(tone_plover, false, 0);
+          PLAY_SONG(plover_song);
         #endif
         layer_off(_RAISE);
         layer_off(_LOWER);
@@ -270,7 +253,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case EXT_PLV:
       if (record->event.pressed) {
         #ifdef AUDIO_ENABLE
-          PLAY_NOTE_ARRAY(tone_plover_gb, false, 0);
+          PLAY_SONG(plover_gb_song);
         #endif
         layer_off(_PLOVER);
       }
@@ -279,36 +262,3 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
   return true;
 }
-
-void matrix_init_user(void) {
-    #ifdef AUDIO_ENABLE
-        startup_user();
-    #endif
-}
-
-#ifdef AUDIO_ENABLE
-
-void startup_user()
-{
-    _delay_ms(20); // gets rid of tick
-    PLAY_NOTE_ARRAY(tone_startup, false, 0);
-}
-
-void shutdown_user()
-{
-    PLAY_NOTE_ARRAY(tone_goodbye, false, 0);
-    _delay_ms(150);
-    stop_all_notes();
-}
-
-void music_on_user(void)
-{
-    music_scale_user();
-}
-
-void music_scale_user(void)
-{
-    PLAY_NOTE_ARRAY(music_scale, false, 0);
-}
-
-#endif
